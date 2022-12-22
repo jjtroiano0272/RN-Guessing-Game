@@ -1,5 +1,12 @@
-import React, { useState } from 'react';
+import React, {
+  useEffect,
+  useState,
+  createContext,
+  useContext,
+  useMemo,
+} from 'react';
 import {
+  Alert,
   ImageBackground,
   SafeAreaView,
   StyleSheet,
@@ -7,39 +14,51 @@ import {
   View,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import PrimaryButton from './components/PrimaryButton';
+import PrimaryButton from './components/ui/PrimaryButton';
 import WelcomeScreen from './screens/WelcomeScreen';
 import { LinearGradient } from 'expo-linear-gradient';
 import GameScreen from './screens/GameScreen';
+import GameOverScreen from './screens/GameOverScreen';
+import { GameOverContext } from './contexts/GameOverContext';
 
 export default function App() {
   const [selectedNum, setSelectedNum] = useState<number>();
+  // const [gameOver, setGameOver] = useState<boolean>(false);
+  const gameOver = useContext(GameOverContext);
+  const [gameOverGlobal, setGameOverGlobal] = useState<boolean>(false);
+  const providerValue = useMemo(
+    () => ({ gameOverGlobal, setGameOverGlobal }),
+    [gameOverGlobal, setGameOverGlobal]
+  );
 
   const handleSelectedNum = (num: number) => {
-    console.log('in handleSelectedNum\nselectedNum is: ', selectedNum);
     setSelectedNum(num);
-    console.log("after setting it's: ", selectedNum);
+    setGameOverGlobal(false);
   };
 
-  if (selectedNum) {
-    var screen = <GameScreen />;
+  var screen: JSX.Element;
+  if (!selectedNum) {
+    screen = <WelcomeScreen onSelectNum={handleSelectedNum} />;
   } else {
-    var screen = <WelcomeScreen onSelectNum={handleSelectedNum} />;
+    screen = <GameScreen userNum={selectedNum} />;
+  }
+  if ((gameOver && selectedNum) || gameOverGlobal) {
+    screen = <GameOverScreen />;
   }
 
   return (
-    <LinearGradient colors={['#291528', '#9E829C']} style={styles.rootScreen}>
-      <ImageBackground
-        style={styles.rootScreen}
-        source={{ uri: 'https://unsplash.it/500/500' }}
-        resizeMode='cover'
-        imageStyle={styles.bgImage}
-      >
-        {/* <StatusBar style='auto' /> */}
-        {/* <WelcomeScreen onSelectNum={handleSelectedNum} /> */}
-        <SafeAreaView style={styles.rootScreen}>{screen}</SafeAreaView>
-      </ImageBackground>
-    </LinearGradient>
+    <GameOverContext.Provider value={providerValue}>
+      <LinearGradient colors={['#291528', '#ccc']} style={styles.rootScreen}>
+        <ImageBackground
+          style={styles.rootScreen}
+          imageStyle={styles.bgImage}
+          source={{ uri: 'https://unsplash.it/seed/picsum/1000/500' }}
+          resizeMode='cover'
+        >
+          <SafeAreaView style={styles.rootScreen}>{screen}</SafeAreaView>
+        </ImageBackground>
+      </LinearGradient>
+    </GameOverContext.Provider>
   );
 }
 
@@ -55,6 +74,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bgImage: {
-    opacity: 0.15,
+    opacity: 0.3,
   },
 });

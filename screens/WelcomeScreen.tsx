@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, TextInput, Text, StyleSheet, Alert } from 'react-native';
-import PrimaryButton from '../components/PrimaryButton';
+import Card from '../components/ui/Card';
+import PrimaryButton from '../components/ui/PrimaryButton';
+import Title from '../components/ui/Title';
+import Colors from '../utils/colors';
+import { Ionicons, Feather } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const WelcomeScreen = ({ onSelectNum }) => {
   // const [selectedNum, setSelectedNum] = useState<number>();
@@ -32,63 +37,51 @@ const WelcomeScreen = ({ onSelectNum }) => {
     onSelectNum(number.number);
   };
 
-  useEffect(() => {
-    console.log(number, '\n', number.number);
-  });
-
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.textInput}
-        keyboardType='number-pad'
-        maxLength={2}
-        // autoFocus={true}
-        value={number?.number?.toString()}
-        onChangeText={textValue => {
-          const num = parseInt(textValue);
-          if (!isNaN(num) && !isNaN(num)) {
-            setNumber({ number: num });
-          } else if (textValue === '') {
-            setNumber({ number: null });
-          }
-        }}
-      />
-      <View style={styles.buttonsContainer}>
-        <View style={styles.buttonContainer}>
-          <PrimaryButton title='CONFIRM' onPress={handleConfirm} />
+    <View style={styles.rootContainer}>
+      <Card>
+        <Title>Guess My Number...</Title>
+        <Text style={{ color: '#e3b37e' }}>Enter a number</Text>
+        <TextInput
+          hitSlop={{ left: 100, right: 100 }}
+          style={styles.textInput}
+          keyboardType='number-pad'
+          maxLength={2}
+          // autoFocus={true}
+          value={number?.number?.toString()}
+          onChangeText={textValue => {
+            const num = parseInt(textValue);
+            if (!isNaN(num) && !isNaN(num)) {
+              setNumber({ number: num });
+            } else if (textValue === '') {
+              setNumber({ number: null });
+            }
+          }}
+        />
+
+        <View style={styles.buttonsContainer}>
+          {/* container */}
+          <PrimaryButton onPress={handleNumReset} color={null}>
+            <MaterialCommunityIcons name='restart' size={24} />
+          </PrimaryButton>
+          <PrimaryButton onPress={handleConfirm}>
+            <Feather name='thumbs-up' size={24} />
+          </PrimaryButton>
         </View>
-        <View style={styles.buttonContainer}>
-          <View>
-            <PrimaryButton title='RESET' onPress={handleNumReset} />
-          </View>
-        </View>
-      </View>
+      </Card>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 0.3,
+  rootContainer: {
     marginTop: 100,
-    marginHorizontal: 24,
-    padding: 16,
-    backgroundColor: '#471c73',
-    borderRadius: 10,
-    elevation: 4,
-    shadowColor: '#121212',
-    shadowOffset: {
-      width: 10,
-      height: 10,
-    },
-    shadowRadius: 6,
-    shadowOpacity: 0.2,
+    flex: 1,
+    alignItems: 'center',
   },
-  inputContainer: {
+  container: {
     padding: 16,
-    backgroundColor: '#471c73',
+    backgroundColor: Colors.secondary,
     borderRadius: 10,
     elevation: 4,
     shadowColor: '#121212',
@@ -101,19 +94,17 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     flexDirection: 'row',
+    // flex: 1,
   },
   textInput: {
     height: 50,
     width: 50,
     fontSize: 32,
-    color: '#ddb52f',
-    borderBottomColor: '#ddb52f',
+    color: Colors.accent1,
+    borderBottomColor: Colors.accent1,
     borderBottomWidth: 2,
     marginVertical: 32,
     fontWeight: 'bold',
-  },
-  buttonContainer: {
-    flex: 1,
   },
 });
 
