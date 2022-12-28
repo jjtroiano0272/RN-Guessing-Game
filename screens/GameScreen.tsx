@@ -1,11 +1,19 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { Text, StyleSheet, View, Alert } from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  View,
+  Alert,
+  FlatList,
+  ScrollView,
+} from 'react-native';
 import NumberContainer from '../components/game/NumberContainer';
 import PrimaryButton from '../components/ui/PrimaryButton';
 import Title from '../components/ui/Title';
 import Colors from '../utils/colors';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { GameOverContext } from '../contexts/GameOverContext';
+import * as Haptics from 'expo-haptics';
 
 const getRandomNum = (min: number, max: number, exclude: number) => {
   const randomNum = Math.floor(Math.random() * (max - min)) + min;
@@ -24,9 +32,16 @@ let maxBoundary = 100;
 interface IProps {
   userNum: number;
   setGameOver?: (gameOver: boolean) => void;
+  guessCount: number;
+  setGuessCount?: (num: number) => void;
 }
 
-const GameScreen = ({ userNum, setGameOver }: IProps) => {
+const GameScreen = ({
+  userNum,
+  setGameOver,
+  guessCount,
+  setGuessCount,
+}: IProps) => {
   // State variables
   const initGuess = getRandomNum(1, 100, userNum);
   const [currentGuess, setCurrentGuess] = useState<number>(initGuess);
@@ -39,9 +54,12 @@ const GameScreen = ({ userNum, setGameOver }: IProps) => {
       (direction === 'higher' && currentGuess > userNum)
     ) {
       // TODO placeholder for Arnold Schwarnegger 'Don't bullshit me!' GIF
+
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       return Alert.alert("Don't bullshit me!");
     }
 
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (direction === 'lower') {
       maxBoundary = currentGuess - 1;
     } else if (direction === 'higher') {
@@ -50,6 +68,7 @@ const GameScreen = ({ userNum, setGameOver }: IProps) => {
 
     // If you haven't guessed it, generate new random number
     setCurrentGuess(getRandomNum(minBoundary, maxBoundary, currentGuess));
+    setGuessCount(guessCount + 1);
   };
 
   // Constantly check if game is still ongoing or not
@@ -59,12 +78,37 @@ const GameScreen = ({ userNum, setGameOver }: IProps) => {
     }
   }, [currentGuess, userNum, setGameOverGlobal]);
 
+  useEffect(() => {
+    let minBoundary = 0;
+    let maxBoundary = 100;
+  }, []);
+
   return (
     <View style={styles.screen}>
-      <Title>Opponent's Guess</Title>
-      <NumberContainer>{currentGuess}</NumberContainer>
+      <View style={{ flex: 1, justifyContent: 'flex-start' }}>
+        <Title>Opponent's Guess</Title>
+      </View>
 
-      <View>
+      <View style={{ flex: 1 }}>
+        <NumberContainer>{currentGuess}</NumberContainer>
+      </View>
+
+      <View style={{ flex: 0.1 }}>
+        <ScrollView>
+          <Text>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure sed
+            veritatis, eos aliquid perferendis aspernatur repellat obcaecati.
+            Voluptatibus, sit doloribus?
+          </Text>
+        </ScrollView>
+      </View>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+        }}
+      >
         <Text style={styles.bodyText}>Higher or Lower?</Text>
         <View style={{ flexDirection: 'row' }}>
           <PrimaryButton onPress={handleNextGuess.bind(this, 'lower')}>
@@ -90,6 +134,7 @@ const styles = StyleSheet.create({
   bodyText: {
     fontSize: 20,
     color: Colors.primary,
+    marginBottom: 20,
   },
 });
 

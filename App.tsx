@@ -23,6 +23,7 @@ import { GameOverContext } from './contexts/GameOverContext';
 
 export default function App() {
   const [selectedNum, setSelectedNum] = useState<number>();
+  const [guessCount, setGuessCount] = useState<number>(1);
   // const [gameOver, setGameOver] = useState<boolean>(false);
   const gameOver = useContext(GameOverContext);
   const [gameOverGlobal, setGameOverGlobal] = useState<boolean>(false);
@@ -40,11 +41,23 @@ export default function App() {
   if (!selectedNum) {
     screen = <WelcomeScreen onSelectNum={handleSelectedNum} />;
   } else {
-    screen = <GameScreen userNum={selectedNum} />;
+    screen = (
+      <GameScreen
+        userNum={selectedNum}
+        setGuessCount={setGuessCount}
+        guessCount={guessCount}
+      />
+    );
   }
   if ((gameOver && selectedNum) || gameOverGlobal) {
-    screen = <GameOverScreen />;
+    screen = (
+      <GameOverScreen guessCount={guessCount} selectedNum={selectedNum} />
+    );
   }
+
+  useEffect(() => {
+    console.log('guessCount: ', guessCount);
+  }, [guessCount]);
 
   return (
     <GameOverContext.Provider value={providerValue}>
