@@ -45,7 +45,6 @@ const GameScreen = ({
   // State variables
   const initGuess = getRandomNum(1, 100, userNum);
   const [currentGuess, setCurrentGuess] = useState<number>(initGuess);
-  const [guessLog, setGuessLog] = useState<number[]>([]);
   const { gameOverGlobal, setGameOverGlobal } = useContext(GameOverContext);
 
   // Handlers
@@ -69,7 +68,6 @@ const GameScreen = ({
 
     // If you haven't guessed it, generate new random number
     setCurrentGuess(getRandomNum(minBoundary, maxBoundary, currentGuess));
-    setGuessLog(prev => [...prev, currentGuess]);
     setGuessCount(guessCount + 1);
   };
 
@@ -95,21 +93,18 @@ const GameScreen = ({
         <NumberContainer>{currentGuess}</NumberContainer>
       </View>
 
-      <View style={{ flex: 0.4 }}>
-        <FlatList
-          data={guessLog}
-          renderItem={({ item }) => (
-            <Text style={styles.guessList}>{item.toString()}</Text>
-          )}
-          keyExtractor={item => item.toString()}
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-        />
+      <View style={{ flex: 0.1 }}>
+        <ScrollView>
+          <Text>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure sed
+            veritatis, eos aliquid perferendis aspernatur repellat obcaecati.
+            Voluptatibus, sit doloribus?
+          </Text>
+        </ScrollView>
       </View>
-
       <View
         style={{
-          flex: 0.6,
+          flex: 1,
           justifyContent: 'flex-end',
           alignItems: 'center',
         }}
@@ -140,11 +135,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: Colors.primary,
     marginBottom: 20,
-  },
-  guessList: {
-    fontSize: 30,
-    color: Colors.secondary,
-    marginVertical: 5,
   },
 });
 

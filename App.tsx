@@ -22,7 +22,7 @@ import GameOverScreen from './screens/GameOverScreen';
 import { GameOverContext } from './contexts/GameOverContext';
 
 export default function App() {
-  const [selectedNum, setSelectedNum] = useState<number | null>();
+  const [selectedNum, setSelectedNum] = useState<number>();
   const [guessCount, setGuessCount] = useState<number>(1);
   // const [gameOver, setGameOver] = useState<boolean>(false);
   const gameOver = useContext(GameOverContext);
@@ -32,7 +32,7 @@ export default function App() {
     [gameOverGlobal, setGameOverGlobal]
   );
 
-  const handleSelectedNum = (num: number | null) => {
+  const handleSelectedNum = (num: number) => {
     setSelectedNum(num);
     setGameOverGlobal(false);
   };
@@ -51,12 +51,7 @@ export default function App() {
   }
   if ((gameOver && selectedNum) || gameOverGlobal) {
     screen = (
-      <GameOverScreen
-        guessCount={guessCount}
-        setGuessCount={setGuessCount}
-        selectedNum={selectedNum}
-        setSelectedNum={setSelectedNum}
-      />
+      <GameOverScreen guessCount={guessCount} selectedNum={selectedNum} />
     );
   }
 

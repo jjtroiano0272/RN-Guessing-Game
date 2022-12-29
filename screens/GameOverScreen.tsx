@@ -6,23 +6,17 @@ import Colors from '../utils/colors';
 import ImageLoad from 'react-native-image-placeholder';
 
 interface IProps {
-  setSelectedNum?: (num: number | null) => void;
+  setSelectedNum?: () => void;
   guessCount: number;
-  setGuessCount: (num: number | null) => void;
   selectedNum: number;
 }
 
 const GameOverScreen = ({
   setSelectedNum,
   guessCount,
-  setGuessCount,
   selectedNum,
 }: IProps) => {
   const { gameOverGlobal, setGameOverGlobal } = useContext(GameOverContext);
-  const handleGameReset = () => {
-    setGameOverGlobal(false);
-    setGuessCount(null);
-  };
 
   return (
     <View style={styles.container}>
@@ -49,10 +43,17 @@ const GameOverScreen = ({
       </View>
 
       <View style={styles.buttonContainer}>
-        <PrimaryButton title={'HOME'} onPress={() => setSelectedNum(null)} />
-        <PrimaryButton title={'Play again'} onPress={handleGameReset} />
+        <PrimaryButton
+          title={'HOME'}
+          onPress={() => setGameOverGlobal(false)}
+        />
+        <PrimaryButton
+          title={'Play again'}
+          onPress={() =>
+            Alert.alert('Home', 'This would take you back to the main screen')
+          }
+        />
       </View>
-
       <Text style={styles.summaryText}>
         Your phone needed <Text style={styles.highlight}>{guessCount}</Text>{' '}
         guesses to get my number{' '}
