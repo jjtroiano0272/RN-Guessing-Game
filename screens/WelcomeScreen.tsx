@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, Text, StyleSheet, Alert } from 'react-native';
+import {
+  View,
+  TextInput,
+  Text,
+  StyleSheet,
+  Alert,
+  Dimensions,
+  KeyboardAvoidingView,
+  ScrollView,
+} from 'react-native';
 import Card from '../components/ui/Card';
 import PrimaryButton from '../components/ui/PrimaryButton';
 import Title from '../components/ui/Title';
@@ -8,10 +17,10 @@ import { Ionicons, Feather } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const WelcomeScreen = ({ onSelectNum }) => {
-  // const [selectedNum, setSelectedNum] = useState<number>();
   const [number, setNumber] = useState<{ number: number | null }>({
     number: null,
   });
+  const deviceHeight = Dimensions.get('window').height;
 
   const handleNumReset = () => {
     setNumber({ number: null });
@@ -38,42 +47,56 @@ const WelcomeScreen = ({ onSelectNum }) => {
   };
 
   return (
-    <View style={styles.rootContainer}>
-      <Card>
-        <Title>Guess My Number...</Title>
-        <Text style={{ color: '#e3b37e' }}>Enter a number</Text>
-        <TextInput
-          hitSlop={{ left: 100, right: 100 }}
-          style={styles.textInput}
-          keyboardType='number-pad'
-          maxLength={2}
-          // autoFocus={true}
-          value={number?.number?.toString()}
-          onChangeText={textValue => {
-            const num = parseInt(textValue);
-            if (!isNaN(num) && !isNaN(num)) {
-              setNumber({ number: num });
-            } else if (textValue === '') {
-              setNumber({ number: null });
-            }
-          }}
-        />
-
-        <View style={styles.buttonsContainer}>
-          {/* container */}
-          <PrimaryButton onPress={handleNumReset} color={null}>
-            <MaterialCommunityIcons name='restart' size={24} />
-          </PrimaryButton>
-          <PrimaryButton onPress={handleConfirm}>
-            <Feather name='thumbs-up' size={24} />
-          </PrimaryButton>
+    <ScrollView style={styles.screen}>
+      <KeyboardAvoidingView style={styles.screen} behavior='position'>
+        <View
+          style={[
+            styles.rootContainer,
+            {
+              marginTop:
+                deviceHeight < 420 ? 30 : styles.rootContainer.marginTop,
+            },
+          ]}
+        >
+          <Card>
+            <Title>Guess My Number...</Title>
+            <Text style={{ color: '#e3b37e' }}>Enter a number</Text>
+            <TextInput
+              hitSlop={{ left: 100, right: 100 }}
+              style={styles.textInput}
+              keyboardType='number-pad'
+              maxLength={2}
+              // autoFocus={true}
+              value={number?.number?.toString()}
+              onChangeText={textValue => {
+                const num = parseInt(textValue);
+                if (!isNaN(num) && !isNaN(num)) {
+                  setNumber({ number: num });
+                } else if (textValue === '') {
+                  setNumber({ number: null });
+                }
+              }}
+            />
+            <View style={styles.buttonsContainer}>
+              {/* container */}
+              <PrimaryButton onPress={handleNumReset} color={null}>
+                <MaterialCommunityIcons name='restart' size={24} />
+              </PrimaryButton>
+              <PrimaryButton onPress={handleConfirm}>
+                <Feather name='thumbs-up' size={24} />
+              </PrimaryButton>
+            </View>
+          </Card>
         </View>
-      </Card>
-    </View>
+      </KeyboardAvoidingView>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
   rootContainer: {
     marginTop: 100,
     flex: 1,

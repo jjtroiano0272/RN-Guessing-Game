@@ -3,8 +3,8 @@
     "name": "Guessing_Game",
     "slug": "Guessing_Game",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/image/icon.png",
+    "orientation": "default",
+    "icon": "./assets/image/icon-a.png",
     "splash": {
       "image": "./assets/image/splash.png",
       "resizeMode": "contain",

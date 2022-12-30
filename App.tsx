@@ -22,9 +22,8 @@ import GameOverScreen from './screens/GameOverScreen';
 import { GameOverContext } from './contexts/GameOverContext';
 
 export default function App() {
-  const [selectedNum, setSelectedNum] = useState<number>();
+  const [selectedNum, setSelectedNum] = useState<number | null>();
   const [guessCount, setGuessCount] = useState<number>(1);
-  // const [gameOver, setGameOver] = useState<boolean>(false);
   const gameOver = useContext(GameOverContext);
   const [gameOverGlobal, setGameOverGlobal] = useState<boolean>(false);
   const providerValue = useMemo(
@@ -32,7 +31,7 @@ export default function App() {
     [gameOverGlobal, setGameOverGlobal]
   );
 
-  const handleSelectedNum = (num: number) => {
+  const handleSelectedNum = (num: number | null) => {
     setSelectedNum(num);
     setGameOverGlobal(false);
   };
@@ -51,13 +50,14 @@ export default function App() {
   }
   if ((gameOver && selectedNum) || gameOverGlobal) {
     screen = (
-      <GameOverScreen guessCount={guessCount} selectedNum={selectedNum} />
+      <GameOverScreen
+        guessCount={guessCount}
+        setGuessCount={setGuessCount}
+        selectedNum={selectedNum}
+        setSelectedNum={setSelectedNum}
+      />
     );
   }
-
-  useEffect(() => {
-    console.log('guessCount: ', guessCount);
-  }, [guessCount]);
 
   return (
     <GameOverContext.Provider value={providerValue}>
@@ -68,7 +68,14 @@ export default function App() {
           source={{ uri: 'https://unsplash.it/seed/picsum/1000/500' }}
           resizeMode='cover'
         >
-          <SafeAreaView style={styles.rootScreen}>{screen}</SafeAreaView>
+          <SafeAreaView style={styles.rootScreen}>
+            <GameOverScreen
+              guessCount={guessCount}
+              setGuessCount={setGuessCount}
+              selectedNum={selectedNum}
+              setSelectedNum={setSelectedNum}
+            />
+          </SafeAreaView>
         </ImageBackground>
       </LinearGradient>
     </GameOverContext.Provider>

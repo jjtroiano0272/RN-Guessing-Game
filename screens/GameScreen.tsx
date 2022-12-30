@@ -6,6 +6,8 @@ import {
   Alert,
   FlatList,
   ScrollView,
+  Dimensions,
+  useWindowDimensions,
 } from 'react-native';
 import NumberContainer from '../components/game/NumberContainer';
 import PrimaryButton from '../components/ui/PrimaryButton';
@@ -26,6 +28,8 @@ const getRandomNum = (min: number, max: number, exclude: number) => {
   }
 };
 
+const deviceWidth = Dimensions.get('window').width;
+
 let minBoundary = 0;
 let maxBoundary = 100;
 
@@ -45,6 +49,7 @@ const GameScreen = ({
   // State variables
   const initGuess = getRandomNum(1, 100, userNum);
   const [currentGuess, setCurrentGuess] = useState<number>(initGuess);
+  const [guessLog, setGuessLog] = useState<number[]>([]);
   const { gameOverGlobal, setGameOverGlobal } = useContext(GameOverContext);
 
   // Handlers
@@ -68,6 +73,7 @@ const GameScreen = ({
 
     // If you haven't guessed it, generate new random number
     setCurrentGuess(getRandomNum(minBoundary, maxBoundary, currentGuess));
+    setGuessLog(prev => [...prev, currentGuess]);
     setGuessCount(guessCount + 1);
   };
 
@@ -83,8 +89,8 @@ const GameScreen = ({
     let maxBoundary = 100;
   }, []);
 
-  return (
-    <View style={styles.screen}>
+  let content = (
+    <>
       <View style={{ flex: 1, justifyContent: 'flex-start' }}>
         <Title>Opponent's Guess</Title>
       </View>
@@ -93,18 +99,21 @@ const GameScreen = ({
         <NumberContainer>{currentGuess}</NumberContainer>
       </View>
 
-      <View style={{ flex: 0.1 }}>
-        <ScrollView>
-          <Text>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure sed
-            veritatis, eos aliquid perferendis aspernatur repellat obcaecati.
-            Voluptatibus, sit doloribus?
-          </Text>
-        </ScrollView>
+      <View style={{ flex: 0.4 }}>
+        <FlatList
+          data={guessLog}
+          renderItem={({ item }) => (
+            <Text style={styles.guessList}>{item.toString()}</Text>
+          )}
+          keyExtractor={item => item.toString()}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+        />
       </View>
+
       <View
         style={{
-          flex: 1,
+          flex: 0.6,
           justifyContent: 'flex-end',
           alignItems: 'center',
         }}
@@ -119,8 +128,50 @@ const GameScreen = ({
           </PrimaryButton>
         </View>
       </View>
-    </View>
+    </>
   );
+
+  if (deviceWidth > 500) {
+    content = (
+      <>
+        <Text style={styles.bodyText}>Higher or Lower?</Text>
+        <View style={{ flex: 1 }}>
+          <NumberContainer>{currentGuess}</NumberContainer>
+        </View>
+
+        <View style={{ flex: 0.4 }}>
+          <FlatList
+            data={guessLog}
+            renderItem={({ item }) => (
+              <Text style={styles.guessList}>{item.toString()}</Text>
+            )}
+            keyExtractor={item => item.toString()}
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
+
+        <View
+          style={{
+            flex: 0.6,
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+          }}
+        >
+          <View style={{ flexDirection: 'row' }}>
+            <PrimaryButton onPress={handleNextGuess.bind(this, 'lower')}>
+              <Ionicons name='md-remove' size={24} color={Colors.primary} />
+            </PrimaryButton>
+            <PrimaryButton onPress={handleNextGuess.bind(this, 'higher')}>
+              <Ionicons name='md-add' size={24} color={Colors.primary} />
+            </PrimaryButton>
+          </View>
+        </View>
+      </>
+    );
+  }
+
+  return <View style={styles.screen}>{content}</View>;
 };
 
 const styles = StyleSheet.create({
@@ -135,6 +186,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: Colors.primary,
     marginBottom: 20,
+  },
+  guessList: {
+    fontSize: 30,
+    color: Colors.secondary,
+    marginVertical: 5,
   },
 });
 
